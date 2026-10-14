@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,15 +37,19 @@ fun SitesScreen(modifier: Modifier = Modifier) {
 
     var isSwitchFavPresionado by remember { mutableStateOf(true) }
 
+    var sliderValue by remember { mutableStateOf(0f) }
+
     // LAMBDA que filtrará la lista, tanto por el [textoBusqueda]
     // como por [isCheckBoxFavPresionado]
     val listaFiltrada = { listaSitios: List<Site>, esPresionado: Boolean ->
         var listaFinal = listOf<Site>()
         if(esPresionado){
             listaFinal = listaSitios.filter { sitio : Site ->
+                //sitio.esFavorito == true Y (sitio.nombre o sitio.direccion contengan textoBusqueda == true)
                 sitio.esFavorito &&
-                        sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
-                        sitio.direccion.contains(textoBusqueda, ignoreCase = true)
+                        //PARENTESIS ENTRE AMBAS CONDICIONES
+                        (sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
+                        sitio.direccion.contains(textoBusqueda, ignoreCase = true))
             }
         }else {
             listaFinal = listaSitios.filter { sitio : Site ->
@@ -52,7 +57,8 @@ fun SitesScreen(modifier: Modifier = Modifier) {
                         sitio.direccion.contains(textoBusqueda, ignoreCase = true)
             }
         }
-        // NO HAY RETURN EXPLICITO -> directamente se referencia la variable o valor
+        // NO HAY RETURN EXPLICITO ->
+        // directamente se referencia la variable o valor
         listaFinal
     }
 
@@ -140,6 +146,18 @@ fun SitesScreen(modifier: Modifier = Modifier) {
             listaFiltrada(listaSitios,isCheckBoxFavPresionado)
         ) { sitio: Site ->
             SiteCard(sitio = sitio)
+        }
+
+        item{
+            Slider(
+                value = sliderValue,
+                onValueChange = { valorUsuario ->
+                    sliderValue = valorUsuario
+                },
+                valueRange = 0f..5f,
+                steps = 5
+            )
+            Text(text = sliderValue.toString())
         }
     }
 }
