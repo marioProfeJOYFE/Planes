@@ -1,10 +1,15 @@
 package com.mrh.planes.ui.screen
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +31,30 @@ fun SitesScreen(modifier: Modifier = Modifier) {
 
     // Variable para buscar en la lista de sitios (escribiendo en la caja de texto)
     var textoBusqueda by remember { mutableStateOf("") }
+
+    var isCheckBoxFavPresionado by remember { mutableStateOf(false) }
+
+    var isSwitchFavPresionado by remember { mutableStateOf(true) }
+
+    // LAMBDA que filtrará la lista, tanto por el [textoBusqueda]
+    // como por [isCheckBoxFavPresionado]
+    val listaFiltrada = { listaSitios: List<Site>, esPresionado: Boolean ->
+        var listaFinal = listOf<Site>()
+        if(esPresionado){
+            listaFinal = listaSitios.filter { sitio : Site ->
+                sitio.esFavorito &&
+                        sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
+                        sitio.direccion.contains(textoBusqueda, ignoreCase = true)
+            }
+        }else {
+            listaFinal = listaSitios.filter { sitio : Site ->
+                        sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
+                        sitio.direccion.contains(textoBusqueda, ignoreCase = true)
+            }
+        }
+        // NO HAY RETURN EXPLICITO -> directamente se referencia la variable o valor
+        listaFinal
+    }
 
     // Lista con los sitios que mostraremos en la columna
     val listaSitios = listOf<Site>(
@@ -69,16 +98,46 @@ fun SitesScreen(modifier: Modifier = Modifier) {
                 )
             )
         }
+
+        // Elemento que contendrá el ChechBox y un texto
+        item{
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    onCheckedChange = {
+                        isCheckBoxFavPresionado = !isCheckBoxFavPresionado
+                    },
+                    checked = isCheckBoxFavPresionado,
+                    enabled = isSwitchFavPresionado
+                )
+                Text(text = "Filtrar Favoritos")
+            }
+        }
+
+        //Elemento que contendrá el Switch que habilitará el Checkbox
+        item{
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                Switch(
+                    checked = isSwitchFavPresionado,
+                    onCheckedChange = {
+                        isSwitchFavPresionado = !isSwitchFavPresionado
+                        isCheckBoxFavPresionado = false
+                    }
+                )
+                Text(text = "Habilitar Checkbox")
+            }
+
+        }
+
         //Estamos pintando los elementos de la lista, pero, al tener la llamada a filter,
         // solo pintaremos los elementos que cumplan la condicion
         // En este caso la condicion es que el textoBusqueda
         // contenga caracteres del nombre o direccion de un sitio
         items(
-            listaSitios.filter
-            { sitio ->
-                sitio.nombre.uppercase().contains(textoBusqueda, ignoreCase = true) ||
-                        sitio.direccion.uppercase().contains(textoBusqueda, ignoreCase = true)
-            }
+            listaFiltrada(listaSitios,isCheckBoxFavPresionado)
         ) { sitio: Site ->
             SiteCard(sitio = sitio)
         }
