@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    // Conserva los plugins que ya tienes.
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -46,6 +48,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     // Libreria iconos
     implementation(libs.androidx.compose.material.icons.extended)
+    //Librerias de navegacion (entre pantallas)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.kotlinx.serialization.core)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

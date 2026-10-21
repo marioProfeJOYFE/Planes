@@ -26,11 +26,9 @@ import com.mrh.planes.data.Site
 
 @Composable
 fun SiteCard(
-    sitio: Site
+    sitio: Site,
+    onFavoritoClick: () -> Unit
 ) {
-
-    var isFavorito by remember { mutableStateOf(sitio.esFavorito) }
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -55,14 +53,16 @@ fun SiteCard(
             ) {
                 Text(text = sitio.rating.toString())
                 IconButton(
+                    //IGUAL DE VALIDO (SOLO UNA ACCION)
+                    //onClick = onFavoritoClick
                     onClick = {
-                        isFavorito = !isFavorito
+                        onFavoritoClick()
                     }
                 ) {
                     Icon(
-                        imageVector = if (isFavorito) Icons.Rounded.Star else Icons.Rounded.StarBorder,
+                        imageVector = if (sitio.esFavorito) Icons.Rounded.Star else Icons.Rounded.StarBorder,
                         contentDescription = "Icono de Estrella",
-                        tint = if(isFavorito) Color.Red else Color.Gray
+                        tint = if(sitio.esFavorito) Color.Red else Color.Gray
                     )
                 }
             }
@@ -78,6 +78,9 @@ fun SiteCardPreview() {
             nombre = "Colegio JOYFE",
             direccion = "Calle Vital Aza 65",
             esFavorito = true
-        )
+        ),
+        onFavoritoClick = {
+            //DEFINIMOS LA ACCION
+        }
     )
 }

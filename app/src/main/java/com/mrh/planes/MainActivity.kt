@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.mrh.planes.ui.navigation.Navigator
 import com.mrh.planes.ui.screen.SitesScreen
 import com.mrh.planes.ui.theme.PlanesTheme
 
@@ -20,11 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PlanesTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SitesScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                Navigator()
             }
         }
     }

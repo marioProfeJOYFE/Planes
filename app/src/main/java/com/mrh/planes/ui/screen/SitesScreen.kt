@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.mrh.planes.data.Site
 import com.mrh.planes.ui.component.SiteCard
 
@@ -37,23 +38,23 @@ fun SitesScreen(modifier: Modifier = Modifier) {
 
     var isSwitchFavPresionado by remember { mutableStateOf(true) }
 
-    var sliderValue by remember { mutableStateOf(0f) }
+    var sliderValue by remember { mutableStateOf(10f) }
 
     // LAMBDA que filtrará la lista, tanto por el [textoBusqueda]
     // como por [isCheckBoxFavPresionado]
     val listaFiltrada = { listaSitios: List<Site>, esPresionado: Boolean ->
         var listaFinal = listOf<Site>()
-        if(esPresionado){
-            listaFinal = listaSitios.filter { sitio : Site ->
+        if (esPresionado) {
+            listaFinal = listaSitios.filter { sitio: Site ->
                 //sitio.esFavorito == true Y (sitio.nombre o sitio.direccion contengan textoBusqueda == true)
                 sitio.esFavorito &&
                         //PARENTESIS ENTRE AMBAS CONDICIONES
                         (sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
-                        sitio.direccion.contains(textoBusqueda, ignoreCase = true))
+                                sitio.direccion.contains(textoBusqueda, ignoreCase = true))
             }
-        }else {
-            listaFinal = listaSitios.filter { sitio : Site ->
-                        sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
+        } else {
+            listaFinal = listaSitios.filter { sitio: Site ->
+                sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
                         sitio.direccion.contains(textoBusqueda, ignoreCase = true)
             }
         }
@@ -63,23 +64,27 @@ fun SitesScreen(modifier: Modifier = Modifier) {
     }
 
     // Lista con los sitios que mostraremos en la columna
-    val listaSitios = listOf<Site>(
-        Site(
-            nombre = "Colegio JOYFE",
-            direccion = "Calle Vital Aza 65",
-            esFavorito = true
-        ),
-        Site(
-            nombre = "Colegio San Blas",
-            direccion = "Calle San Blas",
-            rating = 3.5
-        ),
-        Site(
-            nombre = "Colegio Rivers",
-            direccion = "Calle Vital Pepe 67",
-            esFavorito = true
+    var listaSitios by remember {
+        mutableStateOf(
+            listOf(
+                Site(
+                    nombre = "Colegio JOYFE",
+                    direccion = "Calle Vital Aza 65",
+                    esFavorito = true
+                ),
+                Site(
+                    nombre = "Colegio San Blas",
+                    direccion = "Calle San Blas",
+                    rating = 3.5
+                ),
+                Site(
+                    nombre = "Colegio Rivers",
+                    direccion = "Calle Vital Pepe 67",
+                    esFavorito = true
+                )
+            )
         )
-    )
+    }
 
     // INTERFAZ
     LazyColumn(
@@ -106,7 +111,7 @@ fun SitesScreen(modifier: Modifier = Modifier) {
         }
 
         // Elemento que contendrá el ChechBox y un texto
-        item{
+        item {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -122,10 +127,10 @@ fun SitesScreen(modifier: Modifier = Modifier) {
         }
 
         //Elemento que contendrá el Switch que habilitará el Checkbox
-        item{
+        item {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 Switch(
                     checked = isSwitchFavPresionado,
                     onCheckedChange = {
@@ -133,7 +138,7 @@ fun SitesScreen(modifier: Modifier = Modifier) {
                         isCheckBoxFavPresionado = false
                     }
                 )
-                Text(text = "Habilitar Checkbox")
+                Text(text = "Habilitar Checkbox", fontSize = sliderValue.sp)
             }
 
         }
@@ -143,19 +148,37 @@ fun SitesScreen(modifier: Modifier = Modifier) {
         // En este caso la condicion es que el textoBusqueda
         // contenga caracteres del nombre o direccion de un sitio
         items(
-            listaFiltrada(listaSitios,isCheckBoxFavPresionado)
+            listaFiltrada(listaSitios, isCheckBoxFavPresionado),
+            //Para no perder informacion al filtrar,
+            //hay que especificar cual es el identificador unico de un elemento
+            //PARA FUTURO SIEMPRE EL ID
+            key = { sitio: Site ->
+                sitio.nombre
+            }
         ) { sitio: Site ->
-            SiteCard(sitio = sitio)
+            SiteCard(
+                sitio = sitio,
+                onFavoritoClick = {
+                    //vuelvo a crear una copia de listaSitios para repintar la pantalla
+                    listaSitios = listaSitios.map{ sitioActual: Site ->
+                        if(sitioActual.nombre.equals(sitio.nombre)){
+                            sitioActual.copy(esFavorito = !sitioActual.esFavorito)
+                        }else{
+                            sitioActual
+                        }
+                    }
+                }
+            )
         }
 
-        item{
+        item {
             Slider(
                 value = sliderValue,
                 onValueChange = { valorUsuario ->
                     sliderValue = valorUsuario
                 },
-                valueRange = 0f..5f,
-                steps = 5
+                valueRange = 10f..25f,
+                //steps = 5
             )
             Text(text = sliderValue.toString())
         }
