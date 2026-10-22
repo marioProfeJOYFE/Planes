@@ -6,8 +6,14 @@ import kotlinx.serialization.Serializable
 // AQUI VAN TODAS LAS REFERENCIAS A LAS RUTAS DISPONIBLES
 // IMPORTANTE: NO ES SU CONTENIDO, SOLO SU DECLARACION
 
+
+// data object -> Rutas que no necesitan argumentos
 @Serializable
 data object SitesNav : NavKey
 
+// data class -> Rutas que necesitan argumentos
+// LOS ARGUMENTOS QUE QUERAIS
 @Serializable
-data object SettingsNav : NavKey
+data class SettingsNav(
+    val textoEjemplo: String
+) : NavKey

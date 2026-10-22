@@ -51,7 +51,9 @@ fun Navigator() {
                         FloatingActionButton(
                             onClick = {
                                 Log.d("HOLA", "Click en ajustes")
-                                backStack.add(SettingsNav)
+                                backStack.add(
+                                    SettingsNav(textoEjemplo = "2ºDAM C")
+                                )
                             }
                         ) {
                             Icon(
@@ -67,14 +69,16 @@ fun Navigator() {
                 }
             }
 
-            entry<SettingsNav>{
+            // Al ser una lambda, el objeto con los argumentos de la ruta se
+            // recupera de la misma forma
+            entry<SettingsNav> { rutaDestino: SettingsNav ->
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     Column(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        Text("Ajustes de la aplicacion")
+                        Text(text = rutaDestino.textoEjemplo)
                     }
                 }
             }
