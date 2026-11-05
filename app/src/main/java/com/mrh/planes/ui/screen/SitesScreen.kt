@@ -24,10 +24,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.mrh.planes.data.Site
+import com.mrh.planes.data.listaSitios
 import com.mrh.planes.ui.component.SiteCard
+import kotlin.collections.mutableListOf
 
 @Composable
-fun SitesScreen(modifier: Modifier = Modifier) {
+fun SitesScreen(
+    modifier: Modifier = Modifier,
+    onDetailNavigation: (Int) -> Unit
+) {
 
     //DATOS QUE MUESTRA LA INTERFAZ
 
@@ -63,28 +68,7 @@ fun SitesScreen(modifier: Modifier = Modifier) {
         listaFinal
     }
 
-    // Lista con los sitios que mostraremos en la columna
-    var listaSitios by remember {
-        mutableStateOf(
-            listOf(
-                Site(
-                    nombre = "Colegio JOYFE",
-                    direccion = "Calle Vital Aza 65",
-                    esFavorito = true
-                ),
-                Site(
-                    nombre = "Colegio San Blas",
-                    direccion = "Calle San Blas",
-                    rating = 3.5
-                ),
-                Site(
-                    nombre = "Colegio Rivers",
-                    direccion = "Calle Vital Pepe 67",
-                    esFavorito = true
-                )
-            )
-        )
-    }
+    var listaSitiosCopy by remember { mutableStateOf(listaSitios) }
 
     // INTERFAZ
     LazyColumn(
@@ -148,19 +132,21 @@ fun SitesScreen(modifier: Modifier = Modifier) {
         // En este caso la condicion es que el textoBusqueda
         // contenga caracteres del nombre o direccion de un sitio
         items(
-            listaFiltrada(listaSitios, isCheckBoxFavPresionado),
+            listaFiltrada(listaSitiosCopy, isCheckBoxFavPresionado),
             //Para no perder informacion al filtrar,
             //hay que especificar cual es el identificador unico de un elemento
-            //PARA FUTURO SIEMPRE EL ID
             key = { sitio: Site ->
-                sitio.nombre
+                sitio.id
             }
         ) { sitio: Site ->
             SiteCard(
                 sitio = sitio,
+                onClick = { sitioId ->
+                    onDetailNavigation(sitioId)
+                },
                 onFavoritoClick = {
                     //vuelvo a crear una copia de listaSitios para repintar la pantalla
-                    listaSitios = listaSitios.map{ sitioActual: Site ->
+                    listaSitiosCopy = listaSitiosCopy.map{ sitioActual: Site ->
                         if(sitioActual.nombre.equals(sitio.nombre)){
                             sitioActual.copy(esFavorito = !sitioActual.esFavorito)
                         }else{
@@ -189,5 +175,5 @@ fun SitesScreen(modifier: Modifier = Modifier) {
 @Composable
 @Preview
 fun SitesScreenPreview() {
-    SitesScreen()
+    SitesScreen(onDetailNavigation = {})
 }

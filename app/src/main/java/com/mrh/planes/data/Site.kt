@@ -5,6 +5,7 @@ package com.mrh.planes.data
  *
  * @author Mario Ríos
  *
+ * @param id Identificador unico del sitio
  * @param nombre Nombre del lugar
  * @param direccion Direccion del lugar
  * @param rating Valoracion del lugar
@@ -13,6 +14,7 @@ package com.mrh.planes.data
  *
  */
 data class Site(
+    val id: Int,
     val nombre: String,
     val direccion: String,
     val rating: Double = 1.0,

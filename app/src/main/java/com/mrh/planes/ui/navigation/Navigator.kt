@@ -5,18 +5,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.mrh.planes.data.listaSitios
 import com.mrh.planes.ui.screen.SitesScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Navigator() {
     // Crear el componente que se encarga de gestionar la
@@ -32,7 +39,7 @@ fun Navigator() {
         }
     }
 
-    // Contenedor de el contenido de la aplicacion
+    // Contenedor del contenido de la aplicacion
     // Recibe como parametros el backStack (osease la lista que observa para saber
     // el destino actual y las rutas donde volver)
     // la accion al volver atras
@@ -64,8 +71,45 @@ fun Navigator() {
                     }
                 ) { innerPadding ->
                     SitesScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onDetailNavigation = { sitioId ->
+                            backStack.add(SiteDetailNav(sitioId))
+                        }
                     )
+                }
+            }
+
+            entry<SiteDetailNav>{ rutaDetalle : SiteDetailNav ->
+
+                val sitio = listaSitios.find { sitioLista ->
+                    sitioLista.id == rutaDetalle.siteId
+                }
+
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                sitio?.nombre?.let {
+                                    textoNombre -> Text(text = textoNombre)
+                                }
+                            },
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = {
+                                        volver()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+
                 }
             }
 

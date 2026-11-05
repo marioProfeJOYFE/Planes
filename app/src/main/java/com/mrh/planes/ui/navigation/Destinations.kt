@@ -11,6 +11,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object SitesNav : NavKey
 
+@Serializable
+data class SiteDetailNav(
+    val siteId: Int
+) : NavKey
+
 // data class -> Rutas que necesitan argumentos
 // LOS ARGUMENTOS QUE QUERAIS
 @Serializable

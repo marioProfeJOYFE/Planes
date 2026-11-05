@@ -27,12 +27,16 @@ import com.mrh.planes.data.Site
 @Composable
 fun SiteCard(
     sitio: Site,
-    onFavoritoClick: () -> Unit
+    onFavoritoClick: () -> Unit,
+    onClick: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(10.dp)
+            .padding(10.dp),
+        onClick = {
+            onClick(sitio.id)
+        }
     ) {
         Row(
             modifier = Modifier
@@ -75,12 +79,16 @@ fun SiteCard(
 fun SiteCardPreview() {
     SiteCard(
         sitio = Site(
+            id = 0,
             nombre = "Colegio JOYFE",
             direccion = "Calle Vital Aza 65",
             esFavorito = true
         ),
         onFavoritoClick = {
             //DEFINIMOS LA ACCION
+        },
+        onClick = {
+
         }
     )
 }
