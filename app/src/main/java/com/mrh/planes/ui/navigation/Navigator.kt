@@ -5,22 +5,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.mrh.planes.data.listaSitios
+import com.mrh.planes.ui.screen.SiteDetailScreen
 import com.mrh.planes.ui.screen.SitesScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,33 +81,7 @@ fun Navigator() {
                 val sitio = listaSitios.find { sitioLista ->
                     sitioLista.id == rutaDetalle.siteId
                 }
-
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = {
-                                sitio?.nombre?.let {
-                                    textoNombre -> Text(text = textoNombre)
-                                }
-                            },
-                            navigationIcon = {
-                                IconButton(
-                                    onClick = {
-                                        volver()
-                                    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        )
-                    },
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-
-                }
+                SiteDetailScreen(sitio = sitio, volver = volver)
             }
 
             // Al ser una lambda, el objeto con los argumentos de la ruta se
