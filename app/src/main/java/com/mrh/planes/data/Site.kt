@@ -18,5 +18,5 @@ data class Site(
     val nombre: String,
     val direccion: String,
     val rating: Double = 1.0,
-    var esFavorito: Boolean = false
+    val esFavorito: Boolean = false
 )

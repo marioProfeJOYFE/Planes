@@ -1,52 +1,42 @@
 package com.mrh.planes.ui.navigation
 
 import android.util.Log
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.mrh.planes.data.listaSitios
 import com.mrh.planes.ui.screen.SiteDetailScreen
+import com.mrh.planes.ui.screen.SitesRoute
 import com.mrh.planes.ui.screen.SitesScreen
+import com.mrh.planes.ui.viewmodel.SitesViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun Navigator() {
-    // Crear el componente que se encarga de gestionar la
-    // navegacion entre pantallas del proyecto
-    // el ultimo elemento que añadamos a backStack
-    // será el que veamos en la pantalla
+fun Navigator(){
     val backStack = rememberNavBackStack(SitesNav)
 
-    // Funcion que elimina el ultimo destino de la lista de destinos
-    val volver: () -> Unit = {
-        if (backStack.size > 1) {
+    val volver = {
+        if(backStack.size > 1){
             backStack.removeLastOrNull()
         }
     }
 
-    // Contenedor del contenido de la aplicacion
-    // Recibe como parametros el backStack (osease la lista que observa para saber
-    // el destino actual y las rutas donde volver)
-    // la accion al volver atras
-    // y entryProvider, que es el lugar donde definimos la relacion entre los NavKeys
-    // y lo que pintan en pantalla
+    val sitesViewModel : SitesViewModel = viewModel()
+
     NavDisplay(
         backStack = backStack,
-        onBack = {
-            volver()
-        },
+        onBack = volver,
         entryProvider = entryProvider {
             entry<SitesNav> {
                 Scaffold(
@@ -55,9 +45,6 @@ fun Navigator() {
                         FloatingActionButton(
                             onClick = {
                                 Log.d("HOLA", "Click en ajustes")
-                                backStack.add(
-                                    SettingsNav(textoEjemplo = "2ºDAM C")
-                                )
                             }
                         ) {
                             Icon(
@@ -67,37 +54,25 @@ fun Navigator() {
                         }
                     }
                 ) { innerPadding ->
-                    SitesScreen(
+                    SitesRoute(
                         modifier = Modifier.padding(innerPadding),
+                        viewModel = sitesViewModel,
                         onDetailNavigation = { sitioId ->
-                            backStack.add(SiteDetailNav(sitioId))
+                            backStack.add(SiteDetailNav(siteId = sitioId))
                         }
                     )
                 }
             }
 
-            entry<SiteDetailNav>{ rutaDetalle : SiteDetailNav ->
+            entry<SiteDetailNav> { siteDetailNav ->
 
-                val sitio = listaSitios.find { sitioLista ->
-                    sitioLista.id == rutaDetalle.siteId
-                }
+                val uiState by sitesViewModel.uiState.collectAsStateWithLifecycle()
+
+                val id = siteDetailNav.siteId
+                val sitio = uiState.sitios.find { it.id == id }
                 SiteDetailScreen(sitio = sitio, volver = volver)
             }
 
-            // Al ser una lambda, el objeto con los argumentos de la ruta se
-            // recupera de la misma forma
-            entry<SettingsNav> { rutaDestino: SettingsNav ->
-                Scaffold(
-                    modifier = Modifier.fillMaxSize()
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        Text(text = rutaDestino.textoEjemplo)
-                    }
-                }
-            }
         }
     )
-
 }

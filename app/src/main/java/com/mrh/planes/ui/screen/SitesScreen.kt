@@ -26,11 +26,14 @@ import androidx.compose.ui.unit.sp
 import com.mrh.planes.data.Site
 import com.mrh.planes.data.listaSitios
 import com.mrh.planes.ui.component.SiteCard
+import com.mrh.planes.ui.state.SitesUiState
 import kotlin.collections.mutableListOf
 
 @Composable
 fun SitesScreen(
+    uiState: SitesUiState,
     modifier: Modifier = Modifier,
+    onFavoriteClick:(Int) -> Unit,
     onDetailNavigation: (Int) -> Unit
 ) {
 
@@ -68,7 +71,6 @@ fun SitesScreen(
         listaFinal
     }
 
-    var listaSitiosCopy by remember { mutableStateOf(listaSitios) }
 
     // INTERFAZ
     LazyColumn(
@@ -132,7 +134,7 @@ fun SitesScreen(
         // En este caso la condicion es que el textoBusqueda
         // contenga caracteres del nombre o direccion de un sitio
         items(
-            listaFiltrada(listaSitiosCopy, isCheckBoxFavPresionado),
+            listaFiltrada(uiState.sitios, isCheckBoxFavPresionado),
             //Para no perder informacion al filtrar,
             //hay que especificar cual es el identificador unico de un elemento
             key = { sitio: Site ->
@@ -145,14 +147,7 @@ fun SitesScreen(
                     onDetailNavigation(sitioId)
                 },
                 onFavoritoClick = {
-                    //vuelvo a crear una copia de listaSitios para repintar la pantalla
-                    listaSitiosCopy = listaSitiosCopy.map{ sitioActual: Site ->
-                        if(sitioActual.nombre.equals(sitio.nombre)){
-                            sitioActual.copy(esFavorito = !sitioActual.esFavorito)
-                        }else{
-                            sitioActual
-                        }
-                    }
+                    onFavoriteClick(sitio.id)
                 }
             )
         }
@@ -175,5 +170,5 @@ fun SitesScreen(
 @Composable
 @Preview
 fun SitesScreenPreview() {
-    SitesScreen(onDetailNavigation = {})
+    //SitesScreen(onDetailNavigation = {})
 }
