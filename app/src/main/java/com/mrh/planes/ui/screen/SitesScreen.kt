@@ -1,174 +1,252 @@
 package com.mrh.planes.ui.screen
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import com.mrh.planes.data.Site
+import androidx.compose.ui.unit.dp
 import com.mrh.planes.data.listaSitios
 import com.mrh.planes.ui.component.SiteCard
 import com.mrh.planes.ui.state.SitesUiState
-import kotlin.collections.mutableListOf
+import com.mrh.planes.ui.theme.PlanesTheme
 
 @Composable
 fun SitesScreen(
     uiState: SitesUiState,
     modifier: Modifier = Modifier,
-    onFavoriteClick:(Int) -> Unit,
+    onFavoriteClick: (Int) -> Unit,
     onDetailNavigation: (Int) -> Unit
 ) {
-
-    //DATOS QUE MUESTRA LA INTERFAZ
-
-    // Variable para buscar en la lista de sitios (escribiendo en la caja de texto)
+    // En clase trasladaremos la búsqueda al ViewModel.
     var textoBusqueda by remember { mutableStateOf("") }
+    var soloFavoritos by remember { mutableStateOf(false) }
 
-    var isCheckBoxFavPresionado by remember { mutableStateOf(false) }
+    val teclado = LocalSoftwareKeyboardController.current
 
-    var isSwitchFavPresionado by remember { mutableStateOf(true) }
+    // Calculamos los resultados a partir de los datos actuales.
+    val sitiosFiltrados = uiState.sitios.filter { sitio ->
+        val coincideBusqueda =
+            sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
+                    sitio.direccion.contains(textoBusqueda, ignoreCase = true)
 
-    var sliderValue by remember { mutableStateOf(10f) }
+        val coincideFavorito = !soloFavoritos || sitio.esFavorito
 
-    // LAMBDA que filtrará la lista, tanto por el [textoBusqueda]
-    // como por [isCheckBoxFavPresionado]
-    val listaFiltrada = { listaSitios: List<Site>, esPresionado: Boolean ->
-        var listaFinal = listOf<Site>()
-        if (esPresionado) {
-            listaFinal = listaSitios.filter { sitio: Site ->
-                //sitio.esFavorito == true Y (sitio.nombre o sitio.direccion contengan textoBusqueda == true)
-                sitio.esFavorito &&
-                        //PARENTESIS ENTRE AMBAS CONDICIONES
-                        (sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
-                                sitio.direccion.contains(textoBusqueda, ignoreCase = true))
-            }
-        } else {
-            listaFinal = listaSitios.filter { sitio: Site ->
-                sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
-                        sitio.direccion.contains(textoBusqueda, ignoreCase = true)
-            }
-        }
-        // NO HAY RETURN EXPLICITO ->
-        // directamente se referencia la variable o valor
-        listaFinal
+        coincideBusqueda && coincideFavorito
     }
 
-
-    // INTERFAZ
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            horizontal = 20.dp,
+            vertical = 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // item -> Elemento en PARTICULAR, SOLO UNO
-        item {
-            TextField(
-                value = textoBusqueda,
-                onValueChange = { textoUsuario ->
-                    textoBusqueda = textoUsuario
-                },
-                maxLines = 1,
-                // TODO: Acciones a definir en el teclado
-                keyboardActions = KeyboardActions(
-                    // TODO: Definir que hacer
-                ),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search,
-                    keyboardType = KeyboardType.Text
-                )
-            )
-        }
-
-        // Elemento que contendrá el ChechBox y un texto
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    onCheckedChange = {
-                        isCheckBoxFavPresionado = !isCheckBoxFavPresionado
-                    },
-                    checked = isCheckBoxFavPresionado,
-                    enabled = isSwitchFavPresionado
-                )
-                Text(text = "Filtrar Favoritos")
-            }
-        }
-
-        //Elemento que contendrá el Switch que habilitará el Checkbox
+        // Cabecera
         item {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                Switch(
-                    checked = isSwitchFavPresionado,
-                    onCheckedChange = {
-                        isSwitchFavPresionado = !isSwitchFavPresionado
-                        isCheckBoxFavPresionado = false
+                Text(
+                    text = "Mis sitios",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Buscador
+        item {
+            OutlinedTextField(
+                value = textoBusqueda,
+                onValueChange = { texto ->
+                    textoBusqueda = texto
+                },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text(text = "Buscar por nombre o dirección")
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = null
+                    )
+                },
+                trailingIcon = {
+                    if (textoBusqueda.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                textoBusqueda = ""
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "Limpiar búsqueda"
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        teclado?.hide()
                     }
                 )
-                Text(text = "Habilitar Checkbox", fontSize = sliderValue.sp)
-            }
-
-        }
-
-        //Estamos pintando los elementos de la lista, pero, al tener la llamada a filter,
-        // solo pintaremos los elementos que cumplan la condicion
-        // En este caso la condicion es que el textoBusqueda
-        // contenga caracteres del nombre o direccion de un sitio
-        items(
-            listaFiltrada(uiState.sitios, isCheckBoxFavPresionado),
-            //Para no perder informacion al filtrar,
-            //hay que especificar cual es el identificador unico de un elemento
-            key = { sitio: Site ->
-                sitio.id
-            }
-        ) { sitio: Site ->
-            SiteCard(
-                sitio = sitio,
-                onClick = { sitioId ->
-                    onDetailNavigation(sitioId)
-                },
-                onFavoritoClick = {
-                    onFavoriteClick(sitio.id)
-                }
             )
         }
 
+        // Filtros
         item {
-            Slider(
-                value = sliderValue,
-                onValueChange = { valorUsuario ->
-                    sliderValue = valorUsuario
-                },
-                valueRange = 10f..25f,
-                //steps = 5
-            )
-            Text(text = sliderValue.toString())
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = !soloFavoritos,
+                    onClick = {
+                        soloFavoritos = false
+                    },
+                    label = {
+                        Text(text = "Todos")
+                    }
+                )
+
+                FilterChip(
+                    selected = soloFavoritos,
+                    onClick = {
+                        soloFavoritos = true
+                    },
+                    label = {
+                        Text(text = "Favoritos")
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.Star,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                )
+            }
+        }
+
+        when {
+            uiState.isLoading -> {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+
+            uiState.errorMessage != null -> {
+                item {
+                    Text(
+                        text = uiState.errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+            }
+
+            sitiosFiltrados.isEmpty() -> {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor =
+                                MaterialTheme.colorScheme.surfaceContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "No hay sitios que mostrar",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Text(
+                                text = if (textoBusqueda.isNotBlank()) {
+                                    "Prueba con otro nombre o dirección."
+                                } else if (soloFavoritos) {
+                                    "Pulsa la estrella de un sitio para guardarlo."
+                                } else {
+                                    "Aquí aparecerán tus sitios."
+                                },
+                                color =
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+
+            else -> {
+                item {
+                    Text(
+                        text = if (sitiosFiltrados.size == 1) {
+                            "1 sitio"
+                        } else {
+                            "${sitiosFiltrados.size} sitios"
+                        },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                items(
+                    items = sitiosFiltrados,
+                    key = { sitio -> sitio.id }
+                ) { sitio ->
+                    SiteCard(
+                        sitio = sitio,
+                        onFavoritoClick = {
+                            onFavoriteClick(sitio.id)
+                        },
+                        onClick = { sitioId ->
+                            onDetailNavigation(sitioId)
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
-
+@Preview(showBackground = true)
 @Composable
-@Preview
 fun SitesScreenPreview() {
-    //SitesScreen(onDetailNavigation = {})
+    PlanesTheme {
+        SitesScreen(
+            uiState = SitesUiState(sitios = listaSitios),
+            onFavoriteClick = {},
+            onDetailNavigation = {}
+        )
+    }
 }
