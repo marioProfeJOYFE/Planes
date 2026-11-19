@@ -22,6 +22,9 @@ fun SitesRoute(
         uiState = uiState,
         onFavoriteClick = { sitioId ->
             viewModel.cambiarFavorito(sitioId = sitioId)
+        },
+        onBusquedaChanged = { textoBusqueda ->
+            viewModel.cambiarBusqueda(textoBusqueda)
         }
     )
 

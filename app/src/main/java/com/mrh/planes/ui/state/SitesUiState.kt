@@ -7,6 +7,7 @@ import com.mrh.planes.data.Site
  */
 data class SitesUiState(
     val sitios: List<Site> = emptyList(),
+    val textoBusqueda: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

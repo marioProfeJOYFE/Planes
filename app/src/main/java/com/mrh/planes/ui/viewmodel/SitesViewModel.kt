@@ -40,5 +40,13 @@ class SitesViewModel : ViewModel() {
         }
     }
 
+    fun cambiarBusqueda(texto: String){
+        _uiState.update { estadoActual ->
+            estadoActual.copy(
+                textoBusqueda = texto
+            )
+        }
+    }
+
 
 }

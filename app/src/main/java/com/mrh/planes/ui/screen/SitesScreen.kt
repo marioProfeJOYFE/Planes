@@ -29,10 +29,9 @@ fun SitesScreen(
     uiState: SitesUiState,
     modifier: Modifier = Modifier,
     onFavoriteClick: (Int) -> Unit,
-    onDetailNavigation: (Int) -> Unit
+    onDetailNavigation: (Int) -> Unit,
+    onBusquedaChanged: (String) -> Unit
 ) {
-    // En clase trasladaremos la búsqueda al ViewModel.
-    var textoBusqueda by remember { mutableStateOf("") }
     var soloFavoritos by remember { mutableStateOf(false) }
 
     val teclado = LocalSoftwareKeyboardController.current
@@ -40,8 +39,8 @@ fun SitesScreen(
     // Calculamos los resultados a partir de los datos actuales.
     val sitiosFiltrados = uiState.sitios.filter { sitio ->
         val coincideBusqueda =
-            sitio.nombre.contains(textoBusqueda, ignoreCase = true) ||
-                    sitio.direccion.contains(textoBusqueda, ignoreCase = true)
+            sitio.nombre.contains(uiState.textoBusqueda, ignoreCase = true) ||
+                    sitio.direccion.contains(uiState.textoBusqueda, ignoreCase = true)
 
         val coincideFavorito = !soloFavoritos || sitio.esFavorito
 
@@ -72,9 +71,9 @@ fun SitesScreen(
         // Buscador
         item {
             OutlinedTextField(
-                value = textoBusqueda,
+                value = uiState.textoBusqueda,
                 onValueChange = { texto ->
-                    textoBusqueda = texto
+                    onBusquedaChanged(texto)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
@@ -87,10 +86,10 @@ fun SitesScreen(
                     )
                 },
                 trailingIcon = {
-                    if (textoBusqueda.isNotEmpty()) {
+                    if (uiState.textoBusqueda.isNotEmpty()) {
                         IconButton(
                             onClick = {
-                                textoBusqueda = ""
+                                onBusquedaChanged("")
                             }
                         ) {
                             Icon(
@@ -192,7 +191,7 @@ fun SitesScreen(
                             )
 
                             Text(
-                                text = if (textoBusqueda.isNotBlank()) {
+                                text = if (uiState.textoBusqueda.isNotBlank()) {
                                     "Prueba con otro nombre o dirección."
                                 } else if (soloFavoritos) {
                                     "Pulsa la estrella de un sitio para guardarlo."
@@ -246,7 +245,8 @@ fun SitesScreenPreview() {
         SitesScreen(
             uiState = SitesUiState(sitios = listaSitios),
             onFavoriteClick = {},
-            onDetailNavigation = {}
+            onDetailNavigation = {},
+            onBusquedaChanged = {}
         )
     }
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.mrh.planes.data.Site
 import com.mrh.planes.data.listaSitios
 import com.mrh.planes.ui.component.SiteCard
+import com.mrh.planes.ui.component.SiteCardOld
 import kotlin.collections.mutableListOf
 
 @Composable
@@ -139,7 +140,7 @@ fun SitesScreenOld(
                 sitio.id
             }
         ) { sitio: Site ->
-            SiteCard(
+            SiteCardOld(
                 sitio = sitio,
                 onClick = { sitioId ->
                     onDetailNavigation(sitioId)
