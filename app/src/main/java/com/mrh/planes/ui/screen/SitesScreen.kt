@@ -1,5 +1,6 @@
 package com.mrh.planes.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,6 +47,18 @@ fun SitesScreen(
 
         coincideBusqueda && coincideFavorito
     }
+
+    //Este bloque de codigo se va a ejecutar CADA VEZ que la variable que
+    // le paseis cambie de valor
+
+    // HASTA QUE NO VEAMOS EL MODULO 09, NO LO VOLVERE A TOCAR
+    /*
+    LaunchedEffect(uiState.errorMessage) {
+        if(uiState.errorMessage != null){
+            Log.d("Mensaje de error", uiState.errorMessage)
+        }
+    }
+     */
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
