@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.EventNote
-import androidx.compose.material.icons.outlined.EventNote
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.FloatingActionButton
@@ -54,7 +53,7 @@ fun Navigator() {
         // es gestionada por el Scaffold de CADA PANTALLA
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            if(mostrarNavigationBar) {
+            if (mostrarNavigationBar) {
                 NavigationBar {
                     NavigationBarItem(
                         selected = pantallaActual is SitesNav,
