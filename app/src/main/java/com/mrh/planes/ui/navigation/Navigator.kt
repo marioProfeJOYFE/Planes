@@ -16,9 +16,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
+import com.mrh.planes.ui.screen.PlansRoute
 import com.mrh.planes.ui.screen.SiteDetailScreen
 import com.mrh.planes.ui.screen.SitesRoute
 import com.mrh.planes.ui.screen.SitesScreen
+import com.mrh.planes.ui.viewmodel.PlansViewModel
 import com.mrh.planes.ui.viewmodel.SitesViewModel
 
 
@@ -33,6 +35,8 @@ fun Navigator(){
     }
 
     val sitesViewModel : SitesViewModel = viewModel()
+
+    val plansViewModel : PlansViewModel = viewModel()
 
     NavDisplay(
         backStack = backStack,
@@ -71,6 +75,10 @@ fun Navigator(){
                 val id = siteDetailNav.siteId
                 val sitio = uiState.sitios.find { it.id == id }
                 SiteDetailScreen(sitio = sitio, volver = volver)
+            }
+
+            entry<PlansNav> {
+                PlansRoute(viewModel = plansViewModel)
             }
 
         }

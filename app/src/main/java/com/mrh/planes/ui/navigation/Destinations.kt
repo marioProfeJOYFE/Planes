@@ -10,3 +10,7 @@ data object SitesNav : NavKey
 // Direccion a la que navegar que SI recibe argumentos
 @Serializable
 data class SiteDetailNav( val siteId : Int) : NavKey
+
+
+@Serializable
+data object PlansNav : NavKey
