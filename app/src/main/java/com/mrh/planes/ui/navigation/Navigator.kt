@@ -19,13 +19,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.mrh.planes.ui.screen.PlansRoute
+import com.mrh.planes.ui.screen.SiteDetailRoute
 import com.mrh.planes.ui.screen.SiteDetailScreen
 import com.mrh.planes.ui.screen.SitesRoute
 import com.mrh.planes.ui.viewmodel.PlansViewModel
+import com.mrh.planes.ui.viewmodel.SiteDetailViewModel
+import com.mrh.planes.ui.viewmodel.SiteDetailViewModelFactory
 import com.mrh.planes.ui.viewmodel.SitesViewModel
 
 
@@ -97,6 +102,10 @@ fun Navigator() {
             modifier = Modifier.padding(innerPadding),
             backStack = backStack,
             onBack = volver,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
             entryProvider = entryProvider {
                 entry<SitesNav> {
                     Scaffold(
@@ -125,12 +134,19 @@ fun Navigator() {
                 }
 
                 entry<SiteDetailNav> { siteDetailNav ->
+                    // ESTA LLAMADA OCURRE DENTRO DE LA ENTRADA.
+                    // Los decoradores proporcionan a su propietario
+                    val siteDetailViewModel: SiteDetailViewModel =
+                        viewModel(factory = SiteDetailViewModelFactory(siteId = siteDetailNav.siteId))
 
-                    val uiState by sitesViewModel.uiState.collectAsStateWithLifecycle()
+                    SiteDetailRoute(
+                        volver = {
+                            volver()
+                        },
+                        viewModel = siteDetailViewModel
+                    )
 
-                    val id = siteDetailNav.siteId
-                    val sitio = uiState.sitios.find { it.id == id }
-                    SiteDetailScreen(sitio = sitio, volver = volver)
+
                 }
 
                 entry<PlansNav> {

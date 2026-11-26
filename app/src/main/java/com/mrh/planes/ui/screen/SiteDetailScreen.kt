@@ -17,13 +17,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mrh.planes.data.Site
+import com.mrh.planes.ui.state.SiteDetailUiState
 import com.mrh.planes.ui.theme.PlanesTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SiteDetailScreen(
     modifier: Modifier = Modifier,
-    sitio: Site?,
+    uiState: SiteDetailUiState,
     volver: () -> Unit
 ) {
     Scaffold(
@@ -45,7 +46,7 @@ fun SiteDetailScreen(
         }
     ) { innerPadding ->
 
-        if (sitio == null) {
+        if (uiState.sitio == null) {
             Box(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -82,7 +83,7 @@ fun SiteDetailScreen(
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 
-                    if (sitio.esFavorito) {
+                    if (uiState.sitio.esFavorito) {
                         Text(
                             text = "★ Favorito",
                             style = MaterialTheme.typography.labelLarge,
@@ -106,7 +107,7 @@ fun SiteDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = sitio.nombre,
+                        text = uiState.sitio.nombre,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -151,7 +152,7 @@ fun SiteDetailScreen(
                                 )
 
                                 Text(
-                                    text = sitio.direccion,
+                                    text = uiState.sitio.direccion,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -177,7 +178,7 @@ fun SiteDetailScreen(
                                 )
 
                                 Text(
-                                    text = "${sitio.rating} / 5",
+                                    text = "${uiState.sitio.rating} / 5",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -189,30 +190,30 @@ fun SiteDetailScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun SiteDetailScreenPreview() {
-    PlanesTheme {
-        SiteDetailScreen(
-            sitio = Site(
-                id = 0,
-                nombre = "Colegio JOYFE",
-                direccion = "Calle Vital Aza 65",
-                rating = 4.5,
-                esFavorito = true
-            ),
-            volver = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SiteDetailScreenNullPreview() {
-    PlanesTheme {
-        SiteDetailScreen(
-            sitio = null,
-            volver = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun SiteDetailScreenPreview() {
+//    PlanesTheme {
+//        SiteDetailScreen(
+//            sitio = Site(
+//                id = 0,
+//                nombre = "Colegio JOYFE",
+//                direccion = "Calle Vital Aza 65",
+//                rating = 4.5,
+//                esFavorito = true
+//            ),
+//            volver = {}
+//        )
+//    }
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun SiteDetailScreenNullPreview() {
+//    PlanesTheme {
+//        SiteDetailScreen(
+//            sitio = null,
+//            volver = {}
+//        )
+//    }
+//}
